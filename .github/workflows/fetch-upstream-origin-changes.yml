@@ -20,7 +20,7 @@ jobs:
 
       - name: Add upstream remote
         run: |
-          echo "Adding upstream remote: ${{ env.UPSTREAM_URL }}""
+          echo "Adding upstream remote: ${{ env.UPSTREAM_URL }}"
           git remote add upstream ${{ env.UPSTREAM_URL }}
 
       - name: Fetch upstream
