@@ -19,14 +19,34 @@ jobs:
           fetch-depth: 0
 
       - name: Add upstream remote
-        run: git remote add upstream ${{ env.UPSTREAM_URL }}
+        run: |
+          echo "Adding upstream remote: ${{ env.UPSTREAM_URL }}""
+          git remote add upstream ${{ env.UPSTREAM_URL }}
 
       - name: Fetch upstream
-        run: git fetch upstream
+        run: |
+          echo "Fetching changes from upstream repository"
+          git fetch upstream
 
       - name: Create sync branch
         run: |
+          echo "Creating sync-upstream branch from upstream/${{ env.UPSTREAM_BRANCH }}"
           git checkout -B sync-upstream upstream/${{ env.UPSTREAM_BRANCH }}
+
+      - name: Restore .github/workflows from main
+        run: |
+          echo "Restoring .github/workflows directory from origin/main to discard upstream changes"
+          git restore -s origin/main .github/workflows
+
+      - name: Commit restored workflow files
+        run: |
+          echo "Committing restored .github/workflows to discard upstream workflow changes"
+          git commit -am "Discard upstream github/workflow files"
+        continue-on-error: true
+
+      - name: Pushing sync-upstream branch
+        run: |
+          echo "Pushing changes to sync-upstream branch"
           git push origin sync-upstream --force
 
       - name: Create PR
