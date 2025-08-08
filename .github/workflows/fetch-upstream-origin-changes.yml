@@ -41,6 +41,8 @@ jobs:
       - name: Commit restored workflow files
         run: |
           echo "Committing restored .github/workflows to discard upstream workflow changes"
+          git config --global user.email "runner@paystack.com"
+          git config --global user.name "runner"
           git commit -am "Discard upstream github/workflow files"
         continue-on-error: true
 
