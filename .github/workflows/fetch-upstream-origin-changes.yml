@@ -32,6 +32,8 @@ jobs:
       - name: Create sync-upstream branch from fork main and merge upstream
         run: |
           echo "Creating sync-upstream branch from fork main and merge upstream/${{ env.UPSTREAM_BRANCH }}"
+          git config --global user.email "runner@paystack.com"
+          git config --global user.name "runner"
           git checkout -B sync-upstream origin/main
           git merge --no-ff upstream/${{ env.UPSTREAM_BRANCH }} -m "Merge upstream/${{ env.UPSTREAM_BRANCH }} into sync-upstream"
 
@@ -43,8 +45,6 @@ jobs:
       - name: Commit restored workflow files
         run: |
           echo "Committing restored .github/workflows to discard upstream workflow changes"
-          git config --global user.email "runner@paystack.com"
-          git config --global user.name "runner"
           git commit -am "Discard upstream github/workflow files" || echo "Nothing to commit"
 
       - name: Pushing sync-upstream branch
