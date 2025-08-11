@@ -64,13 +64,13 @@ jobs:
           echo "File"
            ls -al .github/workflows
 
-      - name: Pushing sync-upstream branch
-        run: |
-          echo "Pushing changes to sync-upstream branch"
-          git push origin sync-upstream --force
+      # - name: Pushing sync-upstream branch
+      #   run: |
+      #     echo "Pushing changes to sync-upstream branch"
+      #     git push origin sync-upstream --force
 
-      - name: Show final diff with main
-        run: git diff origin/main --stat
+      # - name: Show final diff with main
+      #   run: git diff origin/main --stat
 
       - name: Create PR
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e #v7
