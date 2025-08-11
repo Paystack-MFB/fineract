@@ -33,6 +33,13 @@ jobs:
           echo "Creating sync-upstream branch from upstream/${{ env.UPSTREAM_BRANCH }}"
           git checkout -B sync-upstream upstream/${{ env.UPSTREAM_BRANCH }}
 
+      - name: Debug
+        run: |
+          echo "Debug"
+          git log | head -n 100
+          echo "Status"
+          git status
+
       - name: Restore .github/workflows from main
         run: |
           echo "Restoring .github/workflows directory from origin/main to discard upstream changes"
@@ -49,6 +56,13 @@ jobs:
         run: |
           echo "Pushing changes to sync-upstream branch"
           git push origin sync-upstream --force
+
+      - name: Debug
+        run: |
+          echo "Debug"
+          git log | head -n 100
+          echo "Status"
+          git status
 
       - name: Create PR
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e #v7
