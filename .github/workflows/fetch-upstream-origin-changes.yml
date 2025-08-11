@@ -57,6 +57,5 @@ jobs:
           commit-message: 'Sync from ${{ env.UPSTREAM_REPO }} upstream repo'
           branch: sync-upstream
           base: main
-          push-to-fork: Paystack-MFB/fineract
           title: '🔄 Sync from ${{ env.UPSTREAM_REPO }}'
           body: 'Sync from upstream repo(${{ env.UPSTREAM_REPO }})'
