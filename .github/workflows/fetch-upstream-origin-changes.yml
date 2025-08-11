@@ -33,6 +33,15 @@ jobs:
           echo "Creating sync-upstream branch from upstream/${{ env.UPSTREAM_BRANCH }}"
           git checkout -B sync-upstream upstream/${{ env.UPSTREAM_BRANCH }}
 
+      - name: Debug
+        run: |
+          echo "Debug"
+          git log | head -n 100
+          echo "Status"
+          git status
+          echo "File"
+           ls -al .github/workflows
+
       - name: Restore .github/workflows from main
         run: |
           echo "Restoring .github/workflows directory from origin/main to discard upstream changes"
@@ -45,6 +54,15 @@ jobs:
           git config --global user.name "runner"
           git commit -am "Discard upstream github/workflow files"
         continue-on-error: true
+
+      - name: Debug
+        run: |
+          echo "Debug"
+          git log | head -n 100
+          echo "Status"
+          git status
+          echo "File"
+           ls -al .github/workflows
 
       - name: Pushing sync-upstream branch
         run: |
