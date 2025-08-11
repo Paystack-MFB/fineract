@@ -35,7 +35,7 @@ jobs:
           git config --global user.email "runner@paystack.com"
           git config --global user.name "runner"
           git checkout -B sync-upstream origin/main
-          git merge --no-ff upstream/${{ env.UPSTREAM_BRANCH }} -m "Merge upstream/${{ env.UPSTREAM_BRANCH }} into sync-upstream"
+          git merge --no-ff -X ours upstream/${{ env.UPSTREAM_BRANCH }} -m "Merge upstream/${{ env.UPSTREAM_BRANCH }} into sync-upstream"
 
       - name: Restore .github/workflows from main
         run: |
