@@ -72,6 +72,9 @@ jobs:
       # - name: Show final diff with main
       #   run: git diff origin/main --stat
 
+      - name: Ensure we are on sync-upstream branch
+        run: git checkout sync-upstream
+
       - name: Create PR
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e #v7
         with:
