@@ -75,9 +75,6 @@ jobs:
       #     title: '🔄 Sync from ${{ env.UPSTREAM_REPO }}'
       #     body: 'Sync from upstream repo(${{ env.UPSTREAM_REPO }})'
 
-      - name: check current branch
-        run: git branch
-
       - name: Debug
         run: |
           echo "Debug"
