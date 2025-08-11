@@ -50,15 +50,33 @@ jobs:
           echo "Pushing changes to sync-upstream branch"
           git push origin sync-upstream --force
 
-      - name: Create PR
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e #v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'Sync from ${{ env.UPSTREAM_REPO }} upstream repo'
-          branch: sync-upstream
-          base: main
-          title: '🔄 Sync from ${{ env.UPSTREAM_REPO }}'
-          body: 'Sync from upstream repo(${{ env.UPSTREAM_REPO }})'
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh -y
+
+      - name: Authenticate GitHub CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh auth login --with-token < $GITHUB_TOKEN
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create --title "Sync from ${{ env.UPSTREAM_REPO }}" --body "Sync from upstream repo(${{ env.UPSTREAM_REPO }})" --base main --head sync-upstream --repo Paystack-MFB/fineract
+
+
+      # - name: Create PR
+      #   uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e #v7
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     commit-message: 'Sync from ${{ env.UPSTREAM_REPO }} upstream repo'
+      #     branch: sync-upstream
+      #     base: main
+      #     title: '🔄 Sync from ${{ env.UPSTREAM_REPO }}'
+      #     body: 'Sync from upstream repo(${{ env.UPSTREAM_REPO }})'
+
+      - name: check current branch
+        run: git branch
 
       - name: Debug
         run: |
