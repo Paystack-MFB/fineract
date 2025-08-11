@@ -59,3 +59,12 @@ jobs:
           base: main
           title: '🔄 Sync from ${{ env.UPSTREAM_REPO }}'
           body: 'Sync from upstream repo(${{ env.UPSTREAM_REPO }})'
+
+      - name: Debug
+        run: |
+          echo "Debug"
+          git log | head -n 100
+          echo "Status"
+          git status
+          echo "File"
+           ls -al .github/workflows
