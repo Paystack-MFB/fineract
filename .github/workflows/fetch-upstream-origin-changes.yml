@@ -25,20 +25,31 @@ jobs:
 
       - name: Fetch upstream and origin
         run: |
-          echo "Fetching upstream and origin"
+          echo "Fetching upstream"
           git fetch upstream
 
-      - name: Create sync-upstream branch from upstream
+      - name: Git config the user and email
         run: |
-          echo "Creating sync-upstream branch from upstream/${{ env.UPSTREAM_BRANCH }}"
-          git checkout -B sync-upstream upstream/${{ env.UPSTREAM_BRANCH }}
+          git config --global user.email "runner@paystack.com"
+          git config --global user.name "runner"
 
-      - name: Debug
+      - name: Create sync branch based on main
         run: |
-          echo "Debug"
-          git log | head -n 100
-          echo "Status"
-          git status
+          git checkout -B sync-upstream origin/main
+
+      - name: Overwrite with upstream except workflows
+        run: |
+          # Remove all tracked files
+          git rm -rf . || true
+          # Checkout everything from upstream
+          git checkout upstream/${{ env.UPSTREAM_BRANCH }} -- .
+          # Restore workflows from fork main
+          git restore -s origin/main .github/workflows || true
+
+      - name: Commit changes if any
+        run: |
+          git add -A
+          git commit -m "Sync from upstream" || echo "No changes to commit"
 
       # - name: Restore .github/workflows from main
       #   run: |
@@ -56,13 +67,6 @@ jobs:
         run: |
           echo "Pushing changes to sync-upstream branch"
           git push origin sync-upstream --force
-
-      - name: Debug
-        run: |
-          echo "Debug"
-          git log | head -n 100
-          echo "Status"
-          git status
 
       - name: Create PR
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e #v7
