@@ -25,43 +25,25 @@ jobs:
 
       - name: Fetch upstream and origin
         run: |
-          echo "Fetching upstream"
+          echo "Fetching changes from upstream repository"
           git fetch upstream
 
-      - name: Git config the user and email
+      - name: Create sync branch
         run: |
+          echo "Creating sync-upstream branch from upstream/${{ env.UPSTREAM_BRANCH }}"
+          git checkout -B sync-upstream upstream/${{ env.UPSTREAM_BRANCH }}
+
+      - name: Restore .github/workflows from main
+        run: |
+          echo "Restoring .github/workflows directory from origin/main to discard upstream changes"
+          git restore -s origin/main .github/workflows || echo "No changes to restore in workflows"
+
+      - name: Commit restored workflow files
+        run: |
+          echo "Committing restored .github/workflows to discard upstream workflow changes"
           git config --global user.email "runner@paystack.com"
           git config --global user.name "runner"
-
-      - name: Create sync branch based on main
-        run: |
-          git checkout -B sync-upstream origin/main
-
-      - name: Overwrite with upstream except workflows
-        run: |
-          # Remove all tracked files
-          git rm -rf . || true
-          # Checkout everything from upstream
-          git checkout upstream/${{ env.UPSTREAM_BRANCH }} -- .
-          # Restore workflows from fork main
-          git restore -s origin/main .github/workflows || true
-
-      - name: Commit changes if any
-        run: |
-          git add -A
-          git commit -m "Sync from upstream" || echo "No changes to commit"
-
-      # - name: Restore .github/workflows from main
-      #   run: |
-      #     echo "Restoring .github/workflows directory from origin/main to discard upstream changes"
-      #     git restore -s origin/main .github/workflows || echo "No changes to restore in workflows"
-
-      # - name: Commit restored workflow files
-      #   run: |
-      #     echo "Committing restored .github/workflows to discard upstream workflow changes"
-      #     git config --global user.email "runner@paystack.com"
-      #     git config --global user.name "runner"
-      #     git commit -am "Discard upstream github/workflow files" || echo "Nothing to commit"
+          git commit -am "Discard upstream github/workflow files" || echo "Nothing to commit"
 
       - name: Pushing sync-upstream branch
         run: |
@@ -75,5 +57,6 @@ jobs:
           commit-message: 'Sync from ${{ env.UPSTREAM_REPO }} upstream repo'
           branch: sync-upstream
           base: main
+          push-to-fork: Paystack-MFB/fineract
           title: '🔄 Sync from ${{ env.UPSTREAM_REPO }}'
           body: 'Sync from upstream repo(${{ env.UPSTREAM_REPO }})'
