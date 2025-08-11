@@ -55,7 +55,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'Sync from ${{ env.UPSTREAM_REPO }} upstream repo'
-          branch: sync-upstream
+          branch: sync-upstream-pr
           base: main
           title: '🔄 Sync from ${{ env.UPSTREAM_REPO }}'
           body: 'Sync from upstream repo(${{ env.UPSTREAM_REPO }})'
