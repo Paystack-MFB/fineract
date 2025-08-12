@@ -39,19 +39,22 @@ jobs:
 
       - name: Restore .github/workflows from main
         run: |
-          echo "Restoring .github/workflows directory from origin/main to discard upstream changes"
-          git restore -s origin/main .github/workflows || echo "No changes to restore in workflows"
+          echo "Removing all .github/workflows files"
+          git rm -r .github/workflows || echo "No workflows to remove"
+          echo "Checking out workflows from origin/main"
+          git checkout origin/main -- .github/workflows
 
       - name: Commit restored workflow files
-        run: |
-          echo "Committing restored .github/workflows to discard upstream workflow changes"
-          git config --global user.email "runner@paystack.com"
-          git config --global user.name "runner"
-          git commit -am "Discard upstream github/workflow files" || echo "Nothing to commit"
+        uses: qoomon/actions--create-commit@dfef4d264de752be6d6195a4d61a2f3d3262d406 #v1
+        id: commit
+        with:
+          message: Discard upstream github/workflow files
+          skip-empty: true
 
-      - name: Pushing sync-upstream branch
+      - name: Push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Pushing changes to ${{ env.FORK_FEATURE_BRANCH }} branch"
           git push origin ${{ env.FORK_FEATURE_BRANCH }} --force
 
       - name: Install GitHub CLI
