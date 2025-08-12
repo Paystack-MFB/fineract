@@ -7,6 +7,10 @@ env:
   UPSTREAM_BRANCH: develop
   UPSTREAM_URL: https://github.com/fiterpaystack/fineract.git
   UPSTREAM_REPO: fiterpaystack/fineract
+  FORK_BASE_BRANCH: main
+  FORK_FEATURE_BRANCH: sync-upstream
+  FORK_REPO: Paystack-MFB/fineract
+
 
 jobs:
   sync:
@@ -30,8 +34,8 @@ jobs:
 
       - name: Create sync branch
         run: |
-          echo "Creating sync-upstream branch from upstream/${{ env.UPSTREAM_BRANCH }}"
-          git checkout -B sync-upstream upstream/${{ env.UPSTREAM_BRANCH }}
+          echo "Creating ${{ env.FORK_FEATURE_BRANCH }} branch from upstream/${{ env.UPSTREAM_BRANCH }}"
+          git checkout -B ${{ env.FORK_FEATURE_BRANCH }} upstream/${{ env.UPSTREAM_BRANCH }}
 
       - name: Restore .github/workflows from main
         run: |
@@ -47,8 +51,8 @@ jobs:
 
       - name: Pushing sync-upstream branch
         run: |
-          echo "Pushing changes to sync-upstream branch"
-          git push origin sync-upstream --force
+          echo "Pushing changes to ${{ env.FORK_FEATURE_BRANCH }} branch"
+          git push origin ${{ env.FORK_FEATURE_BRANCH }} --force
 
       - name: Install GitHub CLI
         run: sudo apt-get install gh -y
@@ -57,4 +61,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr create --title "Sync from ${{ env.UPSTREAM_REPO }}" --body "Sync from upstream repo(${{ env.UPSTREAM_REPO }})" --base main --head sync-upstream --repo Paystack-MFB/fineract
+          gh pr create --title "Sync from ${{ env.UPSTREAM_REPO }}" --body "Sync from upstream repo(${{ env.UPSTREAM_REPO }})" --base ${{ env.FORK_BASE_BRANCH }} --head ${{ env.FORK_FEATURE_BRANCH }} --repo ${{ env.FORK_REPO }}
