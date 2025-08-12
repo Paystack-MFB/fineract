@@ -52,12 +52,19 @@ jobs:
       #     git add .github/workflows
       #     git commit -am "Discard upstream github/workflow files" || echo "Nothing to commit"
 
+      - name: Get all workflow files
+        id: files
+        run: |
+          FILES=$(find .github/workflows -type f)
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Commit restored workflow files
         uses: suzuki-shunsuke/commit-action@ca8e761ccb3533295065c3e90a8555fcdde8b467 #v0.0.10
         with:
           commit_message: "Discard upstream github/workflow files"
-          files: |
-            .github/workflows
+          files: ${{ steps.files.outputs.files }}
 
       - name: Pushing sync-upstream branch
         run: |
