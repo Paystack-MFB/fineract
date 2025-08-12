@@ -44,13 +44,20 @@ jobs:
           echo "Checking out workflows from origin/main"
           git checkout origin/main -- .github/workflows
 
+      # - name: Commit restored workflow files
+      #   run: |
+      #     echo "Committing restored .github/workflows to discard upstream workflow changes"
+      #     git config --global user.email "runner@paystack.com"
+      #     git config --global user.name "runner"
+      #     git add .github/workflows
+      #     git commit -am "Discard upstream github/workflow files" || echo "Nothing to commit"
+
       - name: Commit restored workflow files
-        run: |
-          echo "Committing restored .github/workflows to discard upstream workflow changes"
-          git config --global user.email "runner@paystack.com"
-          git config --global user.name "runner"
-          git add .github/workflows
-          git commit -am "Discard upstream github/workflow files" || echo "Nothing to commit"
+        uses: suzuki-shunsuke/commit-action@ca8e761ccb3533295065c3e90a8555fcdde8b467 #v0.0.10
+        with:
+          commit_message: "Discard upstream github/workflow files"
+          files: |
+            .github/workflows
 
       - name: Pushing sync-upstream branch
         run: |
