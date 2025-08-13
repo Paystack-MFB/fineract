@@ -1,4 +1,4 @@
-name: Sync Upstream
+name: Sync with upstream repository
 
 on:
   workflow_dispatch:
@@ -55,6 +55,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Pushing changes to ${{ env.FORK_FEATURE_BRANCH }} branch"
           git push origin ${{ env.FORK_FEATURE_BRANCH }} --force
 
       - name: Install GitHub CLI
@@ -64,4 +65,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr create --title "Sync from ${{ env.UPSTREAM_REPO }}" --body "Sync from upstream repo(${{ env.UPSTREAM_REPO }})" --base ${{ env.FORK_BASE_BRANCH }} --head ${{ env.FORK_FEATURE_BRANCH }} --repo ${{ env.FORK_REPO }}
+          gh pr create \
+          --title "Sync from ${{ env.UPSTREAM_REPO }}" \
+          --body "Updates our fork's `${{ env.FORK_BASE_BRANCH }}`  branch with the latest changes from upstream `${{env.UPSTREAM_BRANCH}}` branch while preserving our .github/workflows directory." \
+          --base ${{ env.FORK_BASE_BRANCH }} \
+          --head ${{ env.FORK_FEATURE_BRANCH }} \
+          --repo ${{ env.FORK_REPO }}
