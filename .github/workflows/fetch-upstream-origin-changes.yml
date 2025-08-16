@@ -1,0 +1,73 @@
+name: Sync with upstream repository
+
+on:
+  workflow_dispatch:
+
+env:
+  UPSTREAM_BRANCH: develop
+  UPSTREAM_URL: https://github.com/fiterpaystack/fineract.git
+  UPSTREAM_REPO: fiterpaystack/fineract
+  FORK_BASE_BRANCH: main
+  FORK_FEATURE_BRANCH: sync-upstream
+  FORK_REPO: Paystack-MFB/fineract
+
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Add upstream remote
+        run: |
+          echo "Adding upstream remote: ${{ env.UPSTREAM_URL }}"
+          git remote add upstream ${{ env.UPSTREAM_URL }}
+
+      - name: Fetch upstream
+        run: |
+          echo "Fetching changes from upstream repository"
+          git fetch upstream
+
+      - name: Create sync branch
+        run: |
+          echo "Creating ${{ env.FORK_FEATURE_BRANCH }} branch from upstream/${{ env.UPSTREAM_BRANCH }}"
+          git checkout -B ${{ env.FORK_FEATURE_BRANCH }} upstream/${{ env.UPSTREAM_BRANCH }}
+
+      - name: Restore .github/workflows from main
+        run: |
+          echo "Removing all .github/workflows files"
+          git rm -r .github/workflows || echo "No workflows to remove"
+          echo "Checking out workflows from origin/main"
+          git checkout origin/main -- .github/workflows
+
+      - name: Commit restored workflow files
+        uses: qoomon/actions--create-commit@dfef4d264de752be6d6195a4d61a2f3d3262d406 #v1
+        id: commit
+        with:
+          message: Discard upstream github/workflow files
+          skip-empty: true
+
+      - name: Push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Pushing changes to ${{ env.FORK_FEATURE_BRANCH }} branch"
+          git push origin ${{ env.FORK_FEATURE_BRANCH }} --force
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install gh -y
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+          --title "Sync from ${{ env.UPSTREAM_REPO }}" \
+          --body "Updates our fork's `${{ env.FORK_BASE_BRANCH }}`  branch with the latest changes from upstream `${{env.UPSTREAM_BRANCH}}` branch while preserving our .github/workflows directory." \
+          --base ${{ env.FORK_BASE_BRANCH }} \
+          --head ${{ env.FORK_FEATURE_BRANCH }} \
+          --repo ${{ env.FORK_REPO }}
